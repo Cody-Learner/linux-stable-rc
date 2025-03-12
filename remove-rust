@@ -1,5 +1,5 @@
 #!/bin/bash
-# remove-rust 2025-03-12
+# remove-rust  2025-03-12
 
 	cat << EOF
 
