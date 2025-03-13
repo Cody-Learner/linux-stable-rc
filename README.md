@@ -22,6 +22,7 @@ I took this project on as a way to learn a little more about kernels, patching t
 I've been using these for way over a decade, but never bothered diving in any deeper than the kiddy pool shallow end.
 
 Will this ever make it to the AUR? No worries my fellow Archers, I'd never be able to make this pass the long list of rules for submission and have little interest in doing so with this one.
-Maybe this was more of a warmup run for some other potential future AUR submissions. That said, I've never been one to be able to willingly follow rules and regulations. I'd need to figure out how to get over that before anything AUR submission related. 
+Was this possibly more of a warmup run for some other potential future AUR submissions. Who knows, I've never been one to be able to follow rules and regulations without a great deal of effort. 
+I'll need to figure out how to get over that before seriously considering an AUR submission. In the mean time, I have everything I've made both worth sharing and not so much right here. 
 
 So there you have it, my first effort at a PKGBUILD and kernel related stuff... Enjoy!
