@@ -1,7 +1,8 @@
 The PKGBUILD and remove-rust script work together to build the latest version of a Linux kernel you most likely wouldn't want to run other than possibly for testing.
 
 It's an -rc version of the current 'stable' release listed here: https://www.kernel.org/. <br>
-More specifically: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br> 
+More specifically: <br>
+https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br> 
 It's currently at Linux 6.13.7-rc2 <br>
 This kernel is a release canidate containing patches for testing, not to be confused with 'mainline-rc' and all the other version -rc's.<br>
 
