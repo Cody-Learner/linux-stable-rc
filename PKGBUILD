@@ -12,8 +12,8 @@
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 pkgbase=linux-stable-rc
-pkgver=6.13.7rc
-pkgrel=2
+pkgver=6.13
+pkgrel=0
 pkgdesc='Current "stable" version of Linux -rc'
 url=kernel.org
 license=(GPL-2.0-only)
