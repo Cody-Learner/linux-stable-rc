@@ -4,10 +4,25 @@ It's an -rc version of the current 'stable' release listed here: https://www.ker
 Specifically: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br> 
 This kernel is a release canidate containing patches for testing and is not always available.<br> 
 Note: Not to be confused with 'mainline' and 'longterm' versions -rc's.<br>
+<br>
 
-----
+To build this kernel in Arch Linux:
 
-To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+* git clone https://github.com/Cody-Learner/linux-stable-rc.git
+* cd linux-stable-rc
+* makepkg -sr
+* Wait for prompt to make selection.
+
+<br>
+<br>
+
+Note: May have to update checksums as kernel being pulled is dynamic.<br>
+&nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'<br>
+&nbsp;&nbsp;&nbsp;&nbsp; Quote wiki\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
+>"Because the sources are not static, skip the checksum in sha256sums=() ...."<br>
+
+<i>These kernels have no signing key for scripted integrity check AFAIK, so it's up to the user to establish integrity.<br>
+Therefore, I'll leave the correct checksum from when the PKGBUILD was tested. </i>
 
 ----
 
@@ -18,6 +33,8 @@ To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/co
 * Added colored arrow for printed messages.
 * Added printed message when an -rc release is unavailable.
 * Reset '_verst' var when an -rc release is unavailable.
+
+To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
 
 ----
 
