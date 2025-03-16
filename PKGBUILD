@@ -1,15 +1,12 @@
-#!/bin/bash
-# Maintainer: NuSkool
-# linux-stable-rc 2025-03-12
+# Maintainer: NuSkool <nuskool@null.net>
+# linux-stable-rc 2025-03-16
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
-# Depends on AUR package 'modprobed-db' being setup and installed to eliminate unneeded module compile time.
-# To build all modules search and comment out line containing 'HOME' in 'prepare' function.
-# Builds 'stable' version listed: 'kernel.org', -rc linux kernel.
-# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
-# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
-# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?h=linux-6.13.y
-
+# Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
+# To OPT-OUT 'modprobed-db' search/comment out line containing 'HOME' in 'prepare()' function.
+# Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
+# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/
+# Have custom kernel config? Replace existing config when promped for user input.
 #-------------------------------------------------------------------------------------------------------------------------------------
 pkgbase=linux-stable-rc
 pkgver=6.13
@@ -54,8 +51,9 @@ _version=$(curl -s "https://kernel.org/" | awk -F'linux-|.tar' '/downloadarrow/ 
 
 source=(https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
+	     config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
 	remove-rust::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/remove-rust
-	config)
+	)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -63,17 +61,12 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-			# sha256sum linux-stable*gz config remove-rust
+# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config remove-rust
 
-sha256sums=('4a6de23a34f0036ad87ce92fa37ec74296e07526f45b02845fd369901dac38b8'
-            '9d02a908be9f0a408af5166c245509763864b0a037e7c5b14ba3a546ca597fe9'
-            '62fc8201f9bb4f36aaa84184fc008dad2db2fd594d537dd66d9c432576f85d4c'
-	    'SKIP')
-
-# sha256sums=(	'SKIP'
-#		'SKIP'
-#		'SKIP'
-#		'SKIP')
+sha256sums=('e6e7c5390f2eaf7d69548463f2f7d7b3faca958aa3435b6c89dc6987ed7b68b9'		# linux-stable-rc-linux-6.13.y.tar.gz
+            'e371e59fba634b56b6cd99dff54f13437ca0c5fe95b27f115591f1b06cb01c7e'		# arch-config
+            'SKIP'									# config
+            '62fc8201f9bb4f36aaa84184fc008dad2db2fd594d537dd66d9c432576f85d4c')		# remove-rust
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
@@ -85,11 +78,12 @@ prepare() {
 
 
 #......................................................# Begin Additional Code #......................................................#
+_ptr=$(printf "[1;33m ===>[00m")
 
 if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during build.
 
 	cd ..
-if	[[ ! -e config ]]; then
+if	[[ ! -s config ]]; then
 	cp 'arch-config' 'config'
 fi
 
@@ -102,8 +96,20 @@ _verst=$(_vdata='linux-stable-rc-linux-6.13.y.tar.gz'
 	END {print v1 "." v2 "." v3 v4}
 	')
 
+if	[[ "$_verst" != *rc* ]]; then
+	cat << EOF
+
+$_ptr	Kernel version for stable -rc is ${_verst}. 
+	This means an -rc version is currently unavailable.
+	Appending a fake '-rc0' to it, to differentiate it from repo kernel.
+	This kernel s/b available in the Arch official repos.
+EOF
+	_verst="${_verst%}-rc0"
+fi
+
 export pkgver="${_verst%-rc*}rc"	#ie: 6.13.5rc
 export pkgrel="${_verst#*-rc*}"		#ie: 2
+
 _pb=PKGBUILD
 _nver=$(awk -F'=' '/^pkgver=/{print $2}' "${_pb}")
 _nrel=$(awk -F'=' '/^pkgrel=/{print $2}' "${_pb}")
@@ -115,9 +121,9 @@ if	[[ "${_nrel}" != "${pkgrel}" ]]; then
 fi
 	cat << EOF
 
-	Building linux-stable-rc version: ${_verst}
+$_ptr	Building linux-stable-rc version: ${_verst}
 
-	You have 3 choices going forward
+	Select an option:
 	 p  to proceed normally with build, '-g', etc...
 	 e  to exit now, wrong version, etc.
 	 r  to run 'remove-rust' script, possibly useful for build failures

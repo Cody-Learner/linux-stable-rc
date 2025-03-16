@@ -1,8 +1,27 @@
-The PKGBUILD and remove-rust script work together to build the latest version of a Linux kernel you most likely wouldn't want to run other than possibly for testing.
+This PKGBUILD, script and files work together to build the latest version of a Linux kernel you most likely wouldn't want to run, other than possibly for testing.
 
 It's an -rc version of the current 'stable' release listed here: https://www.kernel.org/. <br>
 Specifically: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br> 
-It's currently at Linux 6.13.7-rc2. This kernel is a release canidate containing patches for testing, not to be confused with 'mainline-rc' and all the other version -rc's.<br>
+This kernel is a release canidate containing patches for testing and is not always available.<br> 
+Note: Not to be confused with 'mainline' and 'longterm' versions -rc's.<br>
+
+----
+
+To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+
+----
+
+**2025-03-16**
+
+* Added placeholder config.
+* Updated checksums.
+* Added colored arrow for printed messages.
+* Added printed message when an -rc release is unavailable.
+* Reset '_verst' var when an -rc release is unavailable.
+
+----
+
+**2025-03-12**
 
 The PKGBUILD has a workaround implemented to be dynamic in the kernel versions it builds, while not using a VCS system or downloading a kernel git repo. 
 It pulls the latest kernel source code, pulls the latest Arch 'linux' package kernel config, and my remove-rust script.
