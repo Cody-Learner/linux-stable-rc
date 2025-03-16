@@ -12,7 +12,7 @@ pkgbase=linux-stable-rc
 pkgver=6.13
 pkgrel=0
 pkgdesc='Current "stable" version of Linux -rc'
-url=kernel.org
+url=https://www.kernel.org
 license=(GPL-2.0-only)
 arch=(x86_64)
 
@@ -47,7 +47,7 @@ options=(
 # config
 # remove-rust
 
-_version=$(curl -s "https://kernel.org/" | awk -F'linux-|.tar' '/downloadarrow/ {split($2, a, "\""); print a[1]}')
+_version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
