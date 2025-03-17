@@ -124,7 +124,7 @@ fi
 $_ptr	Building linux-stable-rc version: ${_verst}
 
 	Select an option:
-	 p  to proceed normally with build, '-g', etc...
+	 p  to proceed normally with build, 'makepkg -g', etc.
 	 e  to exit now, wrong version, etc.
 	 r  to run 'remove-rust' script, possibly useful for build failures
 
