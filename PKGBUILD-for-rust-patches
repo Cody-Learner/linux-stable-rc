@@ -9,8 +9,8 @@
 # Have custom kernel config? Replace existing config when promped for user input.
 #-------------------------------------------------------------------------------------------------------------------------------------
 pkgbase=linux-stable-rc
-pkgver=6.13.8rc
-pkgrel=1
+pkgver=6.13
+pkgrel=0
 pkgdesc='Current "stable" version of Linux -rc'
 url=https://www.kernel.org
 license=(GPL-2.0-only)
