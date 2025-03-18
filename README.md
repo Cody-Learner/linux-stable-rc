@@ -26,6 +26,23 @@ Therefore, I'll leave the correct checksum from when the PKGBUILD was tested. </
 
 ----
 
+**2025-03-18**
+
+Greg K-H released -rc1 for Linux 6.13.8! I did a normal test build after having my script derust the config, and all went well.
+
+Next I tried applying Arch's config and patches, but had mixed build results of 1 for 2 completing and was fighting issues all the way.
+I ended up manually pulling a few patches out of Arch's patch file that seemed related to the rust issues I had chased down recently and installed them through a slightly modified PKGBUILD.
+I'm running linux-stable-rc 6.13.8-rc1 with my two copy & pasted patches, using Arch's config out of the box, while typing this.
+
+Have I mention that I'm having a blast with the new linux kernel and PKGBUILD obsession yet? This stuff's been some seriously enjoyably nerdly fun and a nice change of pace! lol
+You all should try some...
+
+Enjoy!
+
+To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+
+----
+
 **2025-03-16**
 
 * Added placeholder config.

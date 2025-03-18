@@ -1,6 +1,5 @@
-#!/bin/bash
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-03-16
+# linux-stable-rc 'w/ arch-patches' 2025-03-17
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
@@ -8,14 +7,12 @@
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
 # Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/
 # Have custom kernel config? Replace existing config when promped for user input.
-# This PKGBUILD installs 6.13.7-cr2 patch set. Edit file name back to PKGBUILD.
 #-------------------------------------------------------------------------------------------------------------------------------------
-
 pkgbase=linux-stable-rc
-pkgver=6.13.7rc
-pkgrel=2
+pkgver=6.13.8rc
+pkgrel=1
 pkgdesc='Current "stable" version of Linux -rc'
-url=kernel.org
+url=https://www.kernel.org
 license=(GPL-2.0-only)
 arch=(x86_64)
 
@@ -50,13 +47,21 @@ options=(
 # config
 # remove-rust
 
-_version=$(curl -s "https://kernel.org/" | awk -F'linux-|.tar' '/downloadarrow/ {split($2, a, "\""); print a[1]}')
+_version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+_arch_ver=$(curl -s https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads |
+           awk '/# Linux\/x86 / {print $3}')
 
 source=(https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
-	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
-	     config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
-	remove-rust::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/remove-rust
-	patch-6.13.7-rc2)
+        arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
+	config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
+        remove-rust::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/remove-rust
+	igen6_edac.patch
+	insn_decoder.patch
+	)
+
+# https://github.com/archlinux/linux/releases/download/v"${_arch_ver}"/linux-v"${_arch_ver}".patch.zst{,.sig}
+# git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
+# linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
@@ -64,14 +69,19 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# 'SKIP' # sha256sum: linux-stable-rc-linux-6.13.y.tar.gz arch-config config remove-rust
+# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config remove-rust
 
-sha256sums=('e6e7c5390f2eaf7d69548463f2f7d7b3faca958aa3435b6c89dc6987ed7b68b9'		# linux-stable-rc-linux-6.13.y.tar.gz
+sha256sums=('9d5d5c5ac11cbe566a37fdf2135670b9182087412b30c00128bb55dbbc7ceeac'		# linux-stable-rc-linux-6.13.y.tar.gz
             'e371e59fba634b56b6cd99dff54f13437ca0c5fe95b27f115591f1b06cb01c7e'		# arch-config
             'SKIP'									# config
             '62fc8201f9bb4f36aaa84184fc008dad2db2fd594d537dd66d9c432576f85d4c'		# remove-rust
-            '469fb5f8d54a95c8b6f391e53500bf05230fa30cc2e952fb3c31a22873d32ce3')		# patch
+            '72cf5ff401482a512a8e93df34af1777301b6709361c731fe56fff11d8868605'		# igen6_edac.patch
+            '29c7dcaa4cb3e299608b2b4ef50346a713efd614ac85f9de9727db6aa2e456c8'		# insn_decoder.patch
+	)
 
+            #'b38f80cf02f9af621ba305ec9ccf992f9f238eb5668110b15cc0c049139f0cd6'		# linux-v6.13.7-arch1.patch.zst
+            #'5a4b48be8b8677441996418a56fb05ceb81d66cb320452709fc4d2725fc53fbc'		# linux-v6.13.7-arch1.patch.zst.sig
+	
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER="${pkgbase}"
@@ -105,9 +115,10 @@ if	[[ "$_verst" != *rc* ]]; then
 
 $_ptr	Kernel version for stable -rc is ${_verst}. 
 	This means an -rc version is currently unavailable.
-	Adding the supplied -rc2 patch.
+	Appending a fake '-rc0' to it, to differentiate it from repo kernel.
+	This kernel s/b available in the Arch official repos.
 EOF
-	_verst="${_verst%}-rc2"
+	_verst="${_verst%}-rc0"
 fi
 
 export pkgver="${_verst%-rc*}rc"	#ie: 6.13.5rc
@@ -122,12 +133,14 @@ fi
 if	[[ "${_nrel}" != "${pkgrel}" ]]; then
 	sed -i s/^pkgrel=[0-9].*/pkgrel="${pkgrel}"/ "${_pb}"
 fi
-	cat << EOF
 
+	cat << EOF
+	
 $_ptr	Building linux-stable-rc version: ${_verst}
+	With Arch patches installed.
 
 	Select an option:
-	 p  to proceed normally with build, '-g', etc...
+	 p  to proceed normally with build, 'makepkg -g', etc.
 	 e  to exit now, wrong version, etc.
 	 r  to run 'remove-rust' script, possibly useful for build failures
 
