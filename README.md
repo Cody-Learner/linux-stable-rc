@@ -4,7 +4,15 @@ This PKGBUILD, builds the latest 'stable'(*) release '-rc' version of the Linux 
 Latest -rc here : https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/ <br>
 Currently (Mar 20 2025): 6.13.8-rc1 <br>
  
-Note: Not to be confused with 'mainline' and 'longterm' versions -rc's.<br>
+**Note:** Not to be confused with 'mainline' and 'longterm' versions -rc's.<br>
+
+This PKGBUILD is dynamic in that the version is not known until the latest kernel source is downloaded. 
+The downloading of all source takes about 2 min, after which the current kernel version will be read from the archive.
+
+You will be promped with notification of the version, along with the requirement of making selection to proceed, remove rust, or exit.
+
+The entire build process takes slightly less than 30min on this hardware, a 7yo HP mini desktop with a Ryzen 2400GE 4 core 35 watt processor.
+Build time is highly dependant on the amount of modules being built. Without using AUR `modprobd-db` this time increases to around 5hr.
 
 To build this kernel in Arch Linux:
 
