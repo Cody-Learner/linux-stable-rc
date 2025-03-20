@@ -1,28 +1,61 @@
-This PKGBUILD, script and files work together to build the latest version of a Linux kernel you most likely wouldn't want to run, other than possibly for testing.
+This PKGBUILD, builds the latest 'stable'(*) release '-rc' version of the Linux kernel for testing.
 
-It's an -rc version of the current 'stable' release listed here: https://www.kernel.org/. <br>
-Specifically: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br> 
-This kernel is a release canidate containing patches for testing and is not always available.<br> 
+(*) Listed here : https://www.kernel.org/ <br>
+Latest -rc here : https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/ <br>
+Currently (Mar 20 2025): 6.13.8-rc1 <br>
+ 
 Note: Not to be confused with 'mainline' and 'longterm' versions -rc's.<br>
-<br>
 
 To build this kernel in Arch Linux:
 
-* git clone https://github.com/Cody-Learner/linux-stable-rc.git
-* cd linux-stable-rc
-* makepkg -sr
-* Wait for prompt to make selection.
+    git clone https://github.com/Cody-Learner/linux-stable-rc.git
+    cd linux-stable-rc
+    makepkg -sr
+    Wait for prompt to make selection.
+
+Alternatively:
+
+    wget https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/refs/heads/main/PKGBUILD
+    makepkg -sr
+    Wait for prompt to make selection.
 
 <br>
+
+**Note:** This PKGBUILD depends on Graysky's AUR modprobed-db https://wiki.archlinux.org/title/Modprobed-db being installed/set up, 
+and/or `$HOME/.config/modprobed.db` being readable.
+
+See the PKGBUILD header for info to opt out of this requirement.
+
 <br>
 
-Note: May have to update checksums as kernel being pulled is dynamic.<br>
-&nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'<br>
+**Note:** May have to update checksums as kernel being pulled is dynamic.<br>
+&nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'.
+
 &nbsp;&nbsp;&nbsp;&nbsp; Quote wiki\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
 >"Because the sources are not static, skip the checksum in sha256sums=() ...."<br>
 
 <i>These kernels have no signing key for scripted integrity check AFAIK, so it's up to the user to establish integrity.<br>
 Therefore, I'll leave the correct checksum from when the PKGBUILD was tested. </i>
+
+<br>
+
+If all goes well, the results will be something like this after installing the packages:
+
+    $ pacman -Q linux-stable-rc
+    linux-stable-rc 6.13.8rc-1
+    $ uname -sr
+    Linux 6.13.7-arch1-1
+
+----
+
+**2025-03-20**
+
+After spending ~~some~~ <i>'a lot of'</i> time on Arch's `linux` package patch file, I'm finally adding it to this package.<br>
+For full transparency on mods to the patch, it's currently removal of the 'Makefile patch' from the group of patches.
+
+I'll keep the option to remove rust from the config as a fallback in case the rapidly moving peices of this PKGBUILD become incompatable.
+
+This update consolidates and sanitizes things a bit.
 
 ----
 
@@ -39,7 +72,7 @@ You all should try some...
 
 Enjoy!
 
-To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
 
 ----
 
@@ -51,7 +84,7 @@ To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/co
 * Added printed message when an -rc release is unavailable.
 * Reset '_verst' var when an -rc release is unavailable.
 
-To review all future updates: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
 
 ----
 

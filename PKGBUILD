@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-03-16
+# linux-stable-rc 2025-03-20
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
@@ -45,14 +45,14 @@ options=(
 # SOURCE:
 # kernel
 # config
-# remove-rust
+
 
 _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
 	     config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
-	remove-rust::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/remove-rust
+	arch-mod.patch
 	)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -61,19 +61,26 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config remove-rust
+# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config
 
-sha256sums=('e6e7c5390f2eaf7d69548463f2f7d7b3faca958aa3435b6c89dc6987ed7b68b9'		# linux-stable-rc-linux-6.13.y.tar.gz
+sha256sums=('9e2f25ebc9525c3f84cae4fc8cd055e214cb98cf138ed311d97419b6e2d51d94'		# linux-stable-rc-linux-6.13.y.tar.gz
             'e371e59fba634b56b6cd99dff54f13437ca0c5fe95b27f115591f1b06cb01c7e'		# arch-config
             'SKIP'									# config
-            '62fc8201f9bb4f36aaa84184fc008dad2db2fd594d537dd66d9c432576f85d4c')		# remove-rust
+            '9231987b5798f2f179048f46e53290be4a19e83f7bfe91687d4fe43ca0a61e32'		# arch-mod.patch
+	)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
-export KBUILD_BUILD_USER="${pkgbase}"
+export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
 
 #-------------------------------------------------------------------------------------------------------------------------------------
+_remove-rust(){
+	if	grep -q 'CONFIG_RUST=y' config ; then			# Edit rust in kernel config
+		sed -i 's/CONFIG_RUST=y/CONFIG_RUST=n/'	config
+	fi
+}
+
 prepare() {
 
 
@@ -121,18 +128,20 @@ if	[[ "${_nrel}" != "${pkgrel}" ]]; then
 fi
 	cat << EOF
 
-$_ptr	Building linux-stable-rc version: ${_verst}
+$_ptr	Building linux-stable-rc version: ${_verst} with Arch patches applied excluding Makefile.
+	Now would be the time to change any kernel config settings before proceeding.
+	If kernel fails to build, try removing rust from config option.
 
 	Select an option:
-	 p  to proceed normally with build, 'makepkg -g', etc.
+	 p  to proceed normally with build
+	 r  to remove rust from kernel config
 	 e  to exit now, wrong version, etc.
-	 r  to run 'remove-rust' script, possibly useful for build failures
 
 EOF
-	while read -n1 -rp "         Press [p/e/r] " reply
+	while read -n1 -rp "         Press [p/r/e] " reply
 	do
 		 if [[ ${reply} == p ]]; then echo ; break ; fi ;
-		 if [[ ${reply} == r ]]; then echo ; . remove-rust ; break ; fi
+		 if [[ ${reply} == r ]]; then echo ; _remove-rust ; break ; fi
 	       { if [[ ${reply} == e ]]; then echo ; fi ; exit ; }
 	done
 	echo
@@ -372,5 +381,3 @@ pkgname=(
 		_package${_p#$pkgbase}
   	}"
 	done
-
-
