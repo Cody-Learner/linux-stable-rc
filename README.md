@@ -56,8 +56,9 @@ If all goes well, the results will be something like this after installing the p
 
     $ pacman -Q linux-stable-rc
     linux-stable-rc 6.13.8rc-1
-    $ uname -sr
-    Linux 6.13.7-arch1-1
+    $ uname -rs
+    Linux 6.13.8-rc1
+
 
 ----
 
