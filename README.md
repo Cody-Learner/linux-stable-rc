@@ -28,6 +28,11 @@ See the PKGBUILD header for info to opt out of this requirement.
 
 <br>
 
+**Note:** The kernel `config` from source is an empty place holder file. By default, it gets overwritten by Arch's current `linux` package `config`. 
+To use your custom config, replace the existing `config` file with your file before running makepkg.
+
+<br>
+
 **Note:** May have to update checksums as kernel being pulled is dynamic.<br>
 &nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'.
 
