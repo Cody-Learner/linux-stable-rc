@@ -45,14 +45,14 @@ options=(
 # SOURCE:
 # kernel
 # config
-
+# arch-mod.patch
 
 _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
 	     config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
-	arch-mod.patch
+	https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/arch-mod.patch
 	)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -61,13 +61,12 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config
+# 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config arch-mod.patch
 
 sha256sums=('9e2f25ebc9525c3f84cae4fc8cd055e214cb98cf138ed311d97419b6e2d51d94'		# linux-stable-rc-linux-6.13.y.tar.gz
             'e371e59fba634b56b6cd99dff54f13437ca0c5fe95b27f115591f1b06cb01c7e'		# arch-config
             'SKIP'									# config
-            '9231987b5798f2f179048f46e53290be4a19e83f7bfe91687d4fe43ca0a61e32'		# arch-mod.patch
-	)
+            '9231987b5798f2f179048f46e53290be4a19e83f7bfe91687d4fe43ca0a61e32')		# arch-mod.patch
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
@@ -81,6 +80,7 @@ _remove-rust(){
 	fi
 }
 
+#-------------------------------------------------------------------------------------------------------------------------------------
 prepare() {
 
 
@@ -129,7 +129,7 @@ fi
 	cat << EOF
 
 $_ptr	Building linux-stable-rc version: ${_verst} with Arch patches applied excluding Makefile.
-	Now would be the time to change any kernel config settings before proceeding.
+	Now would be the time to confirm/change kernel config settings before proceeding.
 	If kernel fails to build, try removing rust from config option.
 
 	Select an option:
@@ -381,3 +381,4 @@ pkgname=(
 		_package${_p#$pkgbase}
   	}"
 	done
+

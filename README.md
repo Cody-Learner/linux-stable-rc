@@ -57,6 +57,8 @@ I'll keep the option to remove rust from the config as a fallback in case the ra
 
 This update consolidates and sanitizes things a bit.
 
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
+
 ----
 
 **2025-03-18**
