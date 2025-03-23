@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-03-20
+# linux-stable-rc 2025-03-22
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
@@ -8,6 +8,7 @@
 # Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/
 # Have custom kernel config? Replace existing config when promped for user input.
 #-------------------------------------------------------------------------------------------------------------------------------------
+_basedir=$(pwd)
 pkgbase=linux-stable-rc
 pkgver=6.13
 pkgrel=0
@@ -22,6 +23,7 @@ makedepends=(
 	gettext
 	graphviz
 	imagemagick
+	kmod
 	libelf
 	pahole
 	perl
@@ -64,7 +66,7 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
 # 'SKIP'	# sha256sum linux-stable-rc-linux-6.13.y.tar.gz arch-config config arch-mod.patch
 
 sha256sums=('9e2f25ebc9525c3f84cae4fc8cd055e214cb98cf138ed311d97419b6e2d51d94'		# linux-stable-rc-linux-6.13.y.tar.gz
-            'e371e59fba634b56b6cd99dff54f13437ca0c5fe95b27f115591f1b06cb01c7e'		# arch-config
+            'ccae8f9a7773146224f796b753d26031cdca8d859d1a1a787a00de54875e25ce'		# arch-config
             'SKIP'									# config
             '9231987b5798f2f179048f46e53290be4a19e83f7bfe91687d4fe43ca0a61e32')		# arch-mod.patch
 
@@ -89,7 +91,7 @@ _ptr=$(printf "[1;33m ===>[00m")
 
 if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during build.
 
-	cd ..
+	cd "${_basedir}"
 if	[[ ! -s config ]]; then
 	cp 'arch-config' 'config'
 fi
@@ -166,7 +168,7 @@ fi
 	do
 		src="${src%%::*}"
 		src="${src##*/}"
-		src="${src%.zst}"						# Leaving in the case repo patches are added later.
+		src="${src%.zst}"
 		[[ $src = *.patch ]] || continue
 		echo "Applying patch $src..."
 		patch -Np1 < "../$src"
@@ -178,13 +180,23 @@ fi
 
 	make olddefconfig
 
-	yes "" | make LSMOD="${HOME}"/.config/modprobed.db localmodconfig	# Comment this out to build all modules
+if	[[ -s "${_basedir}/modprobed.db" ]]; then				# -s Possibly a placeholder file implemented.
+      _modpdb_path="${_basedir}/modprobed.db"
+  elif  [[ -e "${HOME}/.config/modprobed.db" ]]; then
+      _modpdb_path="${HOME}/.config/modprobed.db"
+fi
+if	[[ -n "$_modpdb_path" ]]; then
+        printf '%s\n\n' "${_ptr} Using $_modpdb_path for modules."
+        yes "" | make LSMOD="$_modpdb_path" localmodconfig
+    else
+        printf '%s\n' "${_ptr} No modprobed.db found. Building all modules."
+fi
 
 	diff -u ../config .config || :
 
 	make -s kernelrelease > version
 
-	echo "Prepared ${pkgbase} version $(<version)"
+	printf '%s\n\n' "$_ptr Prepared ${pkgbase} version $(<version)"
 }
 #-------------------------------------------------------------------------------------------------------------------------------------
 pkgver(){

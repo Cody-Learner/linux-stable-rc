@@ -1,20 +1,20 @@
 This PKGBUILD, builds the latest 'stable'(*) release '-rc' version of the Linux kernel for testing.
 
 (*) Listed here : https://www.kernel.org/ <br>
-Latest -rc here : https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/ <br>
+Latest -rc here : https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br>
 Currently (Mar 20 2025): 6.13.8-rc1 <br>
  
 **Note:** Not to be confused with 'mainline' and 'longterm' releases -rc's.<br>
 
 This PKGBUILD is dynamic in that the version is not known until the latest kernel source is downloaded. 
-The downloading of all source takes about 2 min, after which the current kernel version will be read from the archive.
+The source download takes a few min, after which the current kernel version will be read from the compressed archive.
 
-You will be promped with notification of the version, along with the requirement of making a selection to proceed, remove rust, or exit.
+You'll be promped with notification of the current version, along with making a selection to: proceed, remove rust, or exit.
 
 The entire build process takes slightly less than 30min on this hardware, a 7yo HP mini desktop with a Ryzen 2400GE 4 core 35 watt processor.
-Build time is highly dependant on the amount of modules being built. Without using AUR `modprobd-db` this time increases to around 5hr.
+Build time is highly dependant on the amount of modules being built. Without using AUR `modprobd-db` this time increases to around 4hr.
 
-To build this kernel in Arch Linux:
+To build this kernel:
 
     git clone https://github.com/Cody-Learner/linux-stable-rc.git
     cd linux-stable-rc
@@ -25,23 +25,32 @@ Alternatively:
 
     wget https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/refs/heads/main/PKGBUILD
     makepkg -sr
-    Wait for prompt to make selection.
+    Wait for prompt to make a selection.
 
 <br>
 
-**Note:** This PKGBUILD depends on Graysky's AUR modprobed-db https://wiki.archlinux.org/title/Modprobed-db being installed/set up, 
-and/or `$HOME/.config/modprobed.db` being readable.
+**Note:** This PKGBUILD can use Graysky's AUR modprobed-db to save build time among other benefits.<br>
+For additional info: https://wiki.archlinux.org/title/Modprobed-db
 
-See the PKGBUILD header for info to opt out of this requirement.
+A new feature add handles the modprobed-db without user intervention. If it's available, it's used and if not the script proceeds normally.
+
+To facilitate clean chroot builds and building for different hardware, the modprobed-db can now optionally be placed in the `root-build-dir` with the PKGBUILD.
+The `root-build-dir/modprobed-db` takes precedence over `$HOME/.config/modprobed-db` if both are available.
+
+If modprobed-db is not available in either location, all the kernel modules will be built. In any case, a message is printed announcing which locations db will be used or if db was not found.
+
+The PKGBUILD also handles clean chroot builds. If this is new to you, install `devtools` pkg and something like the following should get you started: <br>
+`makechrootpkg -u -r $HOME/path/to/chroot/extra-x86_64/ -d $(pwd) -- -rs --noconfirm --clean`
+
 
 <br>
 
 **Note:** The kernel `config` from source is an empty place holder file. By default, it gets overwritten by Arch's current `linux` package `config`. 
-To use your custom config, replace the existing `config` file with your file before running makepkg.
+To use your config, just replace the existing `config` with your custom config before running makepkg.
 
 <br>
 
-**Note:** May have to update checksums as kernel being pulled is dynamic.<br>
+**Note:** You may have to update checksums as kernel and config file being pulled are dynamic.<br>
 &nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'.
 
 &nbsp;&nbsp;&nbsp;&nbsp; Quote wiki\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
@@ -59,6 +68,21 @@ If all goes well, the results will be something like this after installing the p
     $ uname -rs
     Linux 6.13.8-rc1
 
+
+
+
+----
+
+**2025-03-22**
+
+PKGBUILD:<br>
+Added code to automatically handle modprobed-db. See above for details on this feature add.<br>
+Fixed the PKGBUILD to build in a clean chroot.<br>
+Added `_basedir` variable to replace an existing 'cd ..' command and used in new code additions. The 'cd ..' command was causing issues in a clean chroot build.<br>
+Added 'kmod' to makedepends array to eliminate warning.<br>
+Updated checksums to match Arch's updated kernel config.<br>
+
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
 
 ----
 
