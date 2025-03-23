@@ -1,7 +1,7 @@
 # Maintainer: NuSkool <nuskool@null.net>
 # linux-stable-rc 2025-03-22
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-#
+# 
 # Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
 # To OPT-OUT 'modprobed-db' search/comment out line containing 'HOME' in 'prepare()' function.
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
