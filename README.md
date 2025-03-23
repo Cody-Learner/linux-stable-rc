@@ -39,7 +39,8 @@ The `root-build-dir/modprobed-db` takes precedence over `$HOME/.config/modprobed
 
 If modprobed-db is not available in either location, all the kernel modules will be built. In any case, a message is printed announcing which locations db will be used or if db was not found.
 
-The PKGBUILD also handles clean chroot builds. If this is new to you, install `devtools` pkg and something like the following should get you started: <br>
+The PKGBUILD also handles clean chroot builds. <br>
+If this is new to you, install `devtools` pkg and something like the following should get you started: <br>
 `makechrootpkg -u -r $HOME/path/to/chroot/extra-x86_64/ -d $(pwd) -- -rs --noconfirm --clean`
 
 
