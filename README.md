@@ -76,6 +76,8 @@ If all goes well, the results will be something like this after installing the p
 
 **2025-03-28**
 
+Version: linux-stable-rc  6.13.9rc-1
+
 PKGBUILD:<br>
 Added code to fetch/edit Arch's latest version of the linux patch file.<br>
 Make temporary edits to deal with the kernel transition from 6.13 to 6.14 .<br>
