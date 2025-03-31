@@ -76,11 +76,11 @@ If all goes well, the results will be something like this after installing the p
 
 **2025-03-30**
 
-PKGBUILD:
-Reverted temp edits made in last release.
-Edited '_version' used from www.kernel.org/finger_banner.
-Added parameter expansion on '_version' use to remove 3rd decimal, trailing numbers.
-Fixed escape sequences in '_ptr' (colored arrow) variable.
+PKGBUILD:<br>
+Reverted temp edits made in last release.<br>
+Edited '_version' used from www.kernel.org/finger_banner.<br>
+Added parameter expansion on '_version' use to remove 3rd decimal, trailing numbers.<br>
+Fixed escape sequences in '_ptr' (colored arrow) variable.<br>
 
 Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/
 
