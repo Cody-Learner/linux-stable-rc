@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-03-28
+# linux-stable-rc 2025-03-30
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Depends on AUR 'modprobed-db' being installed/setup to eliminate unneeded modules.
@@ -28,7 +28,7 @@ _srctag="v${_pkgver%.*}-${_pkgver##*.}"
 
 _basedir=$(pwd)
 pkgbase=linux-stable-rc
-pkgver=6.14
+pkgver=6.13
 pkgrel=0
 pkgdesc='Current "stable" version of Linux -rc'
 url=https://www.kernel.org
@@ -84,16 +84,16 @@ fi
 # arch-config
 # arch.patch
 # config
-# linux-stable-rc-linux-6.14.y.tar.gz  / linux-stable-rc-*.tar.gz
+# linux-stable-rc-linux-6.xx.y.tar.gz
 
-_version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+# _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+  _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable [0-9]/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
 	arch.patch
 	config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
-      # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version}".y.tar.gz
-https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-7a7c84290eaf2fbc4ca0574d3ad426d84bcf4647.tar.gz
+	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ sha256sums=(
 	    '2f0d497ad5372e51861a3ed59948795d144cbab03e9df14acf7dfe8ee7b2917e'	# arch-config
 	    '7b06373a905cbbd4696498e9093f92671963be54bc9efb349c3df524bdffefee'	# arch.patch
             'SKIP'								# config
-	    '27fa43bf08bfbd55bbee7cfa542b57755ba466a5e7ec9afe0591fd03dc6242f3'	# linux-stable-rc-7a7c84290eaf2fbc4ca0574d3ad426d84bcf4647.tar.gz
+            'a3cd9ac58662b128b6d3b1c23f6a2811507d1c48bca58f54c78b257eace6694b'	# linux-stable-rc-linux-"${_version%.*}".y.tar.gz
 	   )
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ prepare() {
 
 
 #......................................................# Begin Additional Code #......................................................#
-_ptr=$(printf "[1;33m ===>[00m")
+_ptr=$(printf "\033[1;33m ===>\033[00m")
 
 if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during build.
 
@@ -137,8 +137,7 @@ if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during bui
 		cp 'arch-config' 'config'
 	fi
 
-#	_verst=$(_vdata='linux-stable-rc-linux-6.13.y.tar.gz'
-	_verst=$(_vdata='linux-stable-rc-7a7c84290eaf2fbc4ca0574d3ad426d84bcf4647.tar.gz'
+	_verst=$(_vdata='linux-stable-rc-linux-6.13.y.tar.gz'
 			tar -xzOf "${_vdata}" "${_vdata%.tar*}"/Makefile | awk -F'= *' '
 			/^VERS/ {v1 = $2}
 			/^PATC/ {v2 = $2}
@@ -165,7 +164,7 @@ EOF
 	_nver=$(awk -F'=' '/^pkgver=/{print $2}' "${_pb}")
 	_nrel=$(awk -F'=' '/^pkgrel=/{print $2}' "${_pb}")
 	if	[[ "${_nver}" != "${pkgver}" ]]; then
-		sed -i s/^pkgver=6\.14.*/pkgver="${pkgver}"/ "${_pb}"
+		sed -i s/^pkgver=6\.13.*/pkgver="${pkgver}"/ "${_pb}"
 	fi
 	if	[[ "${_nrel}" != "${pkgrel}" ]]; then
 		sed -i s/^pkgrel=[0-9].*/pkgrel="${pkgrel}"/ "${_pb}"
@@ -201,8 +200,7 @@ if	[[ -d  "${srcdir}/${pkgbase}" ]]; then
 	rm -rd "${srcdir}/${pkgbase}"
 fi
 
-	# mv "${dirname}" "${pkgbase}"
-	mv "linux-stable-rc-7a7c84290eaf2fbc4ca0574d3ad426d84bcf4647" "${pkgbase}"
+	mv "${dirname}" "${pkgbase}"
 	cd "${pkgbase}" || exit
 	touch localversion.10-pkgrel
 	touch localversion.20-pkgname
@@ -227,7 +225,7 @@ fi
 
 	make olddefconfig
 
-if	[[ -s "${_basedir}/modprobed.db" ]]; then				# -s Possibly a placeholder file implemented.
+if	[[ -s "${_basedir}/modprobed.db" ]]; then
       _modpdb_path="${_basedir}/modprobed.db"
   elif  [[ -e "${HOME}/.config/modprobed.db" ]]; then
       _modpdb_path="${HOME}/.config/modprobed.db"
