@@ -76,6 +76,10 @@ If all goes well, the results will be something like this after installing the p
 
 **2025-03-30**
 
+    pacman -Q linux-stable-rc ; uname -rs
+    linux-stable-rc 6.13.9rc-1
+    Linux 6.13.9-rc1
+
 PKGBUILD:<br>
 Reverted temp edits made in last release.<br>
 Edited '_version' used from www.kernel.org/finger_banner.<br>
