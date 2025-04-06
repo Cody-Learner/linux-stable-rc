@@ -74,6 +74,25 @@ If all goes well, the results will be something like this after installing the p
 
 ----
 
+**2025-04-05**
+
+    pacman -Q linux-stable-rc ; uname -rs
+    linux-stable-rc 6.13.10rc-1
+    Linux 6.13.10-rc1
+
+PKGBUILD:<br>
+Commented out packages used for documentation in makedepends array.<br>
+Temp edited kernel source from tag to commit hash.<br>
+Updated kernel source checksum.<br>
+Added '_basedir' var to handle either kernel source from tag or commit hash.<br>
+Edited '_verst' var to handle either kernel source from tag or commit hash.<br>
+Changed 'dirname' var to '_dirname' to comply with PKGBUILD added vars.<br>
+Edited '_dirname' to handle either kernel source from tag or commit hash.<br>
+
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/<br>
+
+-----
+
 **2025-03-30**
 
     pacman -Q linux-stable-rc ; uname -rs
