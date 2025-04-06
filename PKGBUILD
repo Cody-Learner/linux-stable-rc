@@ -1,11 +1,15 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-04-05
+# linux-stable-rc 2025-04-06
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
-# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
-# Have custom kernel config? Replace existing config when promped for user input.
 #
+# Info: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
+#       https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?h=linux-6.13.y
+#
+# Have a custom kernel config?         Replace existing config when promped for user input.
+# Have a graysky's AUR modprobed.db?   It'll be detected/used, or optionally place it the dir with PKGUILD.
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 #						Fetch Arch's latest kernel version.
 
@@ -37,21 +41,23 @@ makedepends=(
 	bc
 	cpio
 	gettext
-#	graphviz
-#	imagemagick
 	kmod
 	libelf
 	pahole
 	perl
 	python
-#	python-sphinx
-#	python-yaml
 	rust
 	rust-bindgen
 	rust-src
 	tar
-#	texlive-latexextra
 	xz
+
+# htmldocs
+#	graphviz
+#	imagemagick
+#	python-sphinx
+#	python-yaml
+#	texlive-latexextra
 	)
 
 options=(
@@ -78,11 +84,15 @@ if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during bui
 fi
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# SOURCE:       https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
+# SOURCE FILES:
 # arch-config
 # arch.patch
 # config
 # linux-stable-rc-linux-6.xx.y.tar.gz
+# Note: Kernel source can be either the kernel branch 'tip/head' or 'commit hash' for the latest snapshot.
+#       For details see: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
+#                        https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/refs/heads?h=linux-6.13.y
+#       If it's a commit hash, move the commented out '#' in the source array and update the source hash.
 
 # _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
   _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable [0-9]/{gsub(/[^0-9.]/,"",$NF); print $NF}')
@@ -91,12 +101,10 @@ source=(
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
 	arch.patch
 	config::https://raw.githubusercontent.com/Cody-Learner/linux-stable-rc/main/config
-#	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
-	linux-stable-rc-linux-"${_version%.*}".y.tar.gz::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-8cbfaadfa0ec371208123554d6ad9994433929bb.tar.gz
+	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-linux-"${_version%.*}".y.tar.gz
+#	linux-stable-rc-linux-"${_version%.*}".y.tar.gz::https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/snapshot/linux-stable-rc-8cbfaadfa0ec371208123554d6ad9994433929bb.tar.gz
 	)
-# Kernel source can be either a 'release tag' and 'commit hash' for the latest snapshot.
-# For details see: https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y
-# If it's a commit hash, move the leading '#' up a line in the source array and the edit the kernels source hash.
+
 #-------------------------------------------------------------------------------------------------------------------------------------
 validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               647F28654894E3BD457199BE38DBBDC86092693E  # Greg Kroah-Hartman
@@ -109,7 +117,7 @@ sha256sums=(
 	    '2f0d497ad5372e51861a3ed59948795d144cbab03e9df14acf7dfe8ee7b2917e'	# arch-config
 	    '7b06373a905cbbd4696498e9093f92671963be54bc9efb349c3df524bdffefee'	# arch.patch
             'SKIP'								# config
-            '4bf4382ab2989b588ec23b2c6c681ff4ecc639116cd65b00ea5263a7ea046cd7'	# linux-stable-rc-linux-"${_version%.*}".y.tar.gz
+            'af9b1c7a17d55d85f9fd73165d187c238f5a3ffdd58917e1d3902e5c9fbf8ad1'	# linux-stable-rc-linux-6.13.y.tar.gz
 	   )
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
@@ -190,7 +198,7 @@ EOF
 		echo
 fi
 #_dirname=$(find "${srcdir}"/ -maxdepth 1 -type d -name 'linux*y' -printf "%f\n")
-_dirname=$(find "${srcdir}"/ -maxdepth 1 -type d -name 'linux-stable-rc*' -printf "%f\n")
+ _dirname=$(find "${srcdir}"/ -maxdepth 1 -type d -name 'linux-stable-rc*' -printf "%f")
 	cd "${srcdir}"
 
 if	[[ -d  "${srcdir}/${pkgbase}" ]]; then

@@ -1,12 +1,12 @@
-This PKGBUILD, builds the latest 'stable'(*) release '-rc' version of the Linux kernel for testing.
+This PKGBUILD builds the latest 'stable'(*) release '-rc' version of the Linux kernel for testing.
 
-(*) Listed here : https://www.kernel.org/ <br>
-Latest -rc here : https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y <br>
-Currently (Mar 20 2025): 6.13.8-rc1 <br>
- 
-**Note:** Not to be confused with 'mainline' and 'longterm' releases -rc's.<br>
+(*) Linux stable listed here  : https://www.kernel.org/ <br>
+Latest stable -rc listed here : [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y) <br>
+Download link listed here: [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?h=linux-6.13.y)
 
-This PKGBUILD is dynamic in that the version is not known until the latest kernel source is downloaded. 
+**Note:** Not to be confused with 'mainline' or 'longterm' release -rc's.<br>
+
+This PKGBUILD is dynamic in that the version is not defined until the latest kernel source is downloaded. 
 The source download takes a few min, after which the current kernel version will be read from the compressed archive.
 
 You'll be promped with notification of the current version, along with making a selection to: proceed, remove rust, or exit.
@@ -29,17 +29,18 @@ Alternatively:
 
 <br>
 
-**Note:** This PKGBUILD can use Graysky's AUR modprobed-db to save build time among other benefits.<br>
-For additional info: https://wiki.archlinux.org/title/Modprobed-db
+This PKGBUILD may use **Graysky's AUR modprobed-db** to save build time among other benefits.<br>
+For additional info: https://wiki.archlinux.org/title/Modprobed-db <br>
+It handles modprobed-db without user intervention. If it's available it's used, if not the script proceeds normally.<br>
 
-A new feature add handles the modprobed-db without user intervention. If it's available, it's used and if not the script proceeds normally.
-
-To facilitate clean chroot builds and building for different hardware, the modprobed-db can now optionally be placed in the `root-build-dir` with the PKGBUILD.
+To facilitate clean chroot builds and building for different hardware, the modprobed-db may optionally be placed in the `root-build-dir` with the PKGBUILD.
 The `root-build-dir/modprobed-db` takes precedence over `$HOME/.config/modprobed-db` if both are available.
 
 If modprobed-db is not available in either location, all the kernel modules will be built. In any case, a message is printed announcing which locations db will be used or if db was not found.
 
-The PKGBUILD also handles clean chroot builds. <br>
+<br>
+
+This PKGBUILD also handles **clean chroot builds**. <br>
 If this is new to you, install `devtools` pkg and something like the following should get you started: <br>
 `makechrootpkg -u -r $HOME/path/to/chroot/extra-x86_64/ -d $(pwd) -- -rs --noconfirm --clean`
 
@@ -52,13 +53,18 @@ To use your config, just replace the existing `config` with your custom config b
 <br>
 
 **Note:** You may have to update checksums as kernel and config file being pulled are dynamic.<br>
-&nbsp;&nbsp;&nbsp;&nbsp; ie: makepkg -g , copy paste -or- change to 'SKIP'.
+There are several options for updating checksums including: <br>
+* For checksums             : makepkg -g  for checksums
+* For checksums + file names: sha256sum *  <br>
+Copy / paste updates into PKGBUILD.  <br>
 
-&nbsp;&nbsp;&nbsp;&nbsp; Quote wiki\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
+
+Arch wiki quote\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
 >"Because the sources are not static, skip the checksum in sha256sums=() ...."<br>
 
-<i>These kernels have no signing key for scripted integrity check AFAIK, so it's up to the user to establish integrity.<br>
-Therefore, I'll leave the correct checksum from when the PKGBUILD was tested. </i>
+**Note:** These kernels have no signing key for scripted integrity check. <br>
+It's up to the user to establish integrity if updates to checksums are required.<br>
+Therefore, I'll leave the correct checksum from when the PKGBUILD was last tested.
 
 <br>
 
@@ -69,8 +75,29 @@ If all goes well, the results will be something like this after installing the p
     $ uname -rs
     Linux 6.13.8-rc1
 
+<br>
+<br>
+<br>
 
+----
+**UPDATES, ANNOUNCEMENTS:**
+<br>
+<br>
+<br>
 
+**2025-04-06**
+
+    pacman -Q linux-stable-rc ; uname -rs
+    linux-stable-rc 6.13.10rc-1
+    Linux 6.13.10-rc1
+
+PKGBUILD:<br>
+Added script comments.<br>
+Changed kernel source from commit hash to kernel git branch 'tip/head'.<br>
+Updated kernel source checksum.<br>
+Removed newline from '_dirname' variable definition, 'find' command.<br>
+
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/<br>
 
 ----
 
