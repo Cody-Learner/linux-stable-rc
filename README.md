@@ -85,6 +85,19 @@ If all goes well, the results will be something like this after installing the p
 <br>
 <br>
 
+**2025-04-12**
+
+PKGBUILD:<br>
+Switched fetching the latest Arch 'linux' pkg kernel version from html to using the JSON interface.<br>
+Changed the edits made to Arch 'linux' pkg kernel patch.<br>
+Edited to stay on the 6.13 stable kernel as both 6.13 and 6.14 are currently listed as stable releases.<br>
+Updated checksums.<br>
+Function prepare(), changed location of 'test if source dir is present and delete if true'.<br>
+
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/<br>
+
+----
+
 **2025-04-06**
 
     pacman -Q linux-stable-rc ; uname -rs

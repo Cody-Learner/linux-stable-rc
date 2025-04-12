@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-04-11
+# linux-stable-rc 2025-04-12
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
@@ -117,17 +117,13 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# 'SKIP'	#For labeled checksums, run:  sha256sum *
-
-# Note: These checksums are for linux-stable-rc-6.13.11rc-2.  
-# A newer version is out at this time: linux-stable-rc-6.13.12rc-1
-# Submitting this version to stay in sequence with the -rc releases.
+# 'SKIP'	#For a labeled checksum, manually run: sha256sum *
 
 sha256sums=(
-	    '85ca1138589c697a53480a68523bb68510f9cde16bc0b7d67dd80aeab88972ab'	# arch-config
-	    '38c3dfbb278049d195b370c61a5b3a592c2779cc1fb0870836748f668d26505f'	# arch.patch
+	    '30a1bb8334bf716ac94e9feeb94a7e375688f1763e71b6afbda793639f1a4ef2'	# arch-config
+	    '2a86b507e80e8e48795812ad6f456a966fe496cd5ed5e24ac791b46ad3c46bd4'	# arch.patch
             'SKIP'								# config
-            'f60d2f04c054c041a7ca75f495b6b05eb0ee33d43afe7a927e93fcdba24682cf'	# linux-stable-rc-linux-6.13.y.tar.gz
+            '3536805f90723de0b0cddd262a89ac648360900acdeacdb129e4a9b4608bfc0f'	# linux-stable-rc-linux-6.13.y.tar.gz
 	   )
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
