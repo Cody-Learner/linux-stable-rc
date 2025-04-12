@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-04-06
+# linux-stable-rc 2025-04-11
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
@@ -13,16 +13,14 @@
 #-------------------------------------------------------------------------------------------------------------------------------------
 #						Fetch Arch's latest kernel version.
 
-	curl  https://archlinux.org/packages/core/x86_64/linux/ > linux-pkg
+_testing=$(curl -s -o /dev/null https://archlinux.org/packages/core-testing/x86_64/linux/json/ | jq -r '.pkgver')
 
-_current=$(awk -F' - | \\(x86' '/<title>/ {print $2}' linux-pkg)
-_testing=$(awk -F'>| \\[c'  '/\[core-testing\]/ {print $2}' linux-pkg)
-	if	[[ -n ${_testing} ]]; then
-_pkgver="${_testing#*x }"
-		else
-_pkgver="${_current#*x }"
-	fi
-	rm linux-pkg
+if	[[ -n ${_testing} ]]; then
+	_pkgver="${_testing#*x }"
+    else
+	_current=$(curl -s https://archlinux.org/packages/core/x86_64/linux/json/ | jq -r '.pkgver')
+	_pkgver="${_current#*x }"
+fi
 _pkgver=${_pkgver%-*}
 _srctag="v${_pkgver%.*}-${_pkgver##*.}"
 
@@ -78,8 +76,13 @@ if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during bui
 
 	sed -i '/^ Makefile.*/d' arch.patch
 	sed -i '/^diff --git a\/Makefile b\/Makefile/,/# \*DOCUMENTATION\*$/d'  arch.patch
-	sed -i '/^diff --git a\/lib\/longest_symbol_kunit.c b\/lib\/longest_symbol_kunit\.c/,/\+MODULE_AUTHOR\(\"Sergio González Collado\"\)\;$/d' arch.patch
-	sed -i '/^diff --git a\/lib\/Makefile b\/lib\/Makefile/,/^obj-\$\(CONFIG_GENERIC_LIB_DEVMEM_IS_ALLOWED\) += devmem_is_allowed\.o/d' arch.patch
+	sed -i '/^ lib\/Makefile/d' arch.patch
+	sed -i '/^diff --git a\/lib\/Makefile b\/lib\/Makefile/,/+= devmem_is_allowed\.o/d' arch.patch
+	sed -i '/^ lib\/longest_symbol_kunit\.c/d' arch.patch
+	sed -i '/^diff --git a\/lib\/longest_symbol_kunit\.c/,/+MODULE_AUTHOR\("Sergio González Collado"\);/d' arch.patch
+	sed -i '/^ drivers\/edac\/igen6_edac.c/d' arch.patch
+	sed -i '/^diff --git a\/drivers\/edac\/igen6_edac\.c/,/ static void errsts_clear(struct igen6_imc \*imc)/d' arch.patch
+
 	rm arch.patch.zst
 fi
 
@@ -95,7 +98,10 @@ fi
 #       If it's a commit hash, move the commented out '#' in the source array and update the source hash.
 
 # _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
-  _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable [0-9]/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+# _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable [0-9]/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+
+#  We'll stay on kernel 6.13 for now...
+  _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable 6.13/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
@@ -111,13 +117,17 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
               83BC8889351B5DEBBB68416EB8AC08600F108CDF) # Jan Alexander Steffens (heftig)
 
 #-------------------------------------------------------------------------------------------------------------------------------------
-# 'SKIP'	#For a labeled checksum, manually run: sha256sum *
+# 'SKIP'	#For labeled checksums, run:  sha256sum *
+
+# Note: These checksums are for linux-stable-rc-6.13.11rc-2.  
+# A newer version is out at this time: linux-stable-rc-6.13.12rc-1
+# Submitting this version to stay in sequence with the -rc releases.
 
 sha256sums=(
-	    '2f0d497ad5372e51861a3ed59948795d144cbab03e9df14acf7dfe8ee7b2917e'	# arch-config
-	    '7b06373a905cbbd4696498e9093f92671963be54bc9efb349c3df524bdffefee'	# arch.patch
+	    '85ca1138589c697a53480a68523bb68510f9cde16bc0b7d67dd80aeab88972ab'	# arch-config
+	    '38c3dfbb278049d195b370c61a5b3a592c2779cc1fb0870836748f668d26505f'	# arch.patch
             'SKIP'								# config
-            'af9b1c7a17d55d85f9fd73165d187c238f5a3ffdd58917e1d3902e5c9fbf8ad1'	# linux-stable-rc-linux-6.13.y.tar.gz
+            'f60d2f04c054c041a7ca75f495b6b05eb0ee33d43afe7a927e93fcdba24682cf'	# linux-stable-rc-linux-6.13.y.tar.gz
 	   )
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
@@ -197,13 +207,14 @@ EOF
 		done
 		echo
 fi
+if	[[ -d  "${srcdir}/${pkgbase}" ]]; then
+	rm -rd "${srcdir}/${pkgbase}"
+fi
+
 #_dirname=$(find "${srcdir}"/ -maxdepth 1 -type d -name 'linux*y' -printf "%f\n")
  _dirname=$(find "${srcdir}"/ -maxdepth 1 -type d -name 'linux-stable-rc*' -printf "%f")
 	cd "${srcdir}"
 
-if	[[ -d  "${srcdir}/${pkgbase}" ]]; then
-	rm -rd "${srcdir}/${pkgbase}"
-fi
 	mv "${_dirname}" "${pkgbase}"
 	cd "${pkgbase}" || exit
 	touch localversion.10-pkgrel
