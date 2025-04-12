@@ -87,6 +87,10 @@ If all goes well, the results will be something like this after installing the p
 
 **2025-04-12**
 
+    pacman -Q linux-stable-rc ; uname -rs
+    linux-stable-rc 6.13.12rc-1
+    Linux 6.13.12-rc1
+
 PKGBUILD:<br>
 Switched fetching the latest Arch 'linux' pkg kernel version from html to using the JSON interface.<br>
 Changed the edits made to Arch 'linux' pkg kernel patch.<br>
