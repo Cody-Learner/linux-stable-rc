@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-04-12
+# linux-stable-rc 2025-04-13
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
@@ -13,16 +13,15 @@
 #-------------------------------------------------------------------------------------------------------------------------------------
 #						Fetch Arch's latest kernel version.
 
-_testing=$(curl -s -o /dev/null https://archlinux.org/packages/core-testing/x86_64/linux/json/ | jq -r '.pkgver')
+	_testing=$(curl -s https://archlinux.org/packages/core-testing/x86_64/linux/json/ | jq -r '.pkgver' 2>/dev/null)
 
 if	[[ -n ${_testing} ]]; then
-	_pkgver="${_testing#*x }"
+	_pkgver=${_testing}
     else
 	_current=$(curl -s https://archlinux.org/packages/core/x86_64/linux/json/ | jq -r '.pkgver')
-	_pkgver="${_current#*x }"
+	_pkgver=${_current}
 fi
-_pkgver=${_pkgver%-*}
-_srctag="v${_pkgver%.*}-${_pkgver##*.}"
+_srctag="v${_pkgver%.*}-${_pkgver##*.}"		# Replace last dot(.) with dash(-) for use in URL
 
 #-------------------------------------------------------------------------------------------------------------------------------------
 
