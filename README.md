@@ -1,8 +1,8 @@
 This PKGBUILD builds the latest 'stable'(*) release '-rc' version of the Linux kernel for testing.
 
 (*) Linux stable listed here  : https://www.kernel.org/ <br>
-Latest stable -rc listed here : [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.13.y) <br>
-Download link listed here: [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?h=linux-6.13.y)
+Latest stable -rc listed here : [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/log/?h=linux-6.15.y) <br>
+Download link listed here: [https://web.git.kernel.org](https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?h=linux-6.15.y)
 
 **Note:** Not to be confused with 'mainline' or 'longterm' release -rc's.<br>
 
@@ -84,6 +84,19 @@ If all goes well, the results will be something like this after installing the p
 <br>
 <br>
 <br>
+
+**2025-06-08**
+
+	pacman -Q linux-stable-rc ; uname -rs
+	linux-stable-rc 6.15.2rc-1
+	Linux 6.15.2-rc1
+
+PKGBUILD:<br>
+Made changes required to build Linux stable 6.15 latest release candidate.
+
+Update details: https://github.com/Cody-Learner/linux-stable-rc/commits/main/<br>
+
+----
 
 **2025-04-12**
 

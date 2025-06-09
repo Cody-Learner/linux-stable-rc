@@ -1,5 +1,5 @@
 # Maintainer: NuSkool <nuskool@null.net>
-# linux-stable-rc 2025-04-13
+# linux-stable-rc 2025-06-08
 # Credits: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
 #
 # Builds -rc version listed 'stable' kernel.org ie: 'stable: 6.13...'
@@ -27,7 +27,7 @@ _srctag="v${_pkgver%.*}-${_pkgver##*.}"		# Replace last dot(.) with dash(-) for 
 
 _basedir=$(pwd)
 pkgbase=linux-stable-rc
-pkgver=6.13
+pkgver=6.15
 pkgrel=0
 pkgdesc='Current "stable" version of Linux -rc'
 url=https://www.kernel.org
@@ -73,14 +73,10 @@ if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during bui
 	curl -L -o arch.patch.zst "https://github.com/archlinux/linux/releases/download/${_srctag}/linux-${_srctag}.patch.zst"
 	zstd --decompress arch.patch.zst
 
-	sed -i '/^ Makefile.*/d' arch.patch
-	sed -i '/^diff --git a\/Makefile b\/Makefile/,/# \*DOCUMENTATION\*$/d'  arch.patch
-	sed -i '/^ lib\/Makefile/d' arch.patch
-	sed -i '/^diff --git a\/lib\/Makefile b\/lib\/Makefile/,/+= devmem_is_allowed\.o/d' arch.patch
-	sed -i '/^ lib\/longest_symbol_kunit\.c/d' arch.patch
-	sed -i '/^diff --git a\/lib\/longest_symbol_kunit\.c/,/+MODULE_AUTHOR\("Sergio González Collado"\);/d' arch.patch
-	sed -i '/^ drivers\/edac\/igen6_edac.c/d' arch.patch
-	sed -i '/^diff --git a\/drivers\/edac\/igen6_edac\.c/,/ static void errsts_clear(struct igen6_imc \*imc)/d' arch.patch
+	sed -i '/^ Makefile.*/d' 									arch.patch
+	sed -i '/^diff --git a\/Makefile b\/Makefile/,/# \*DOCUMENTATION\*$/d'				arch.patch
+	sed -i '/^ drivers\/gpu\/drm\/amd\/display\/amdgpu_dm\/amdgpu_dm.c*/d'				arch.patch
+	sed -i '/^diff --git a\/drivers\/gpu\/drm\/amd\/display\/amdgpu_dm\/amdgpu_dm.c/,/^ 	\/\*/d'	arch.patch
 
 	rm arch.patch.zst
 fi
@@ -96,11 +92,10 @@ fi
 #                        https://web.git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/refs/heads?h=linux-6.13.y
 #       If it's a commit hash, move the commented out '#' in the source array and update the source hash.
 
-# _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
-# _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable [0-9]/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+_version=$(curl -sL "${url}"/finger_banner | awk '/latest stable version/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
-#  We'll stay on kernel 6.13 for now...
-  _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable 6.13/{gsub(/[^0-9.]/,"",$NF); print $NF}')
+#  We'll stay on kernel 6.XX for now...
+#  _version=$(curl -sL "${url}"/finger_banner | awk '/latest stable 6.13/{gsub(/[^0-9.]/,"",$NF); print $NF}')
 
 source=(
 	arch-config::https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/raw/main/config?ref_type=heads
@@ -119,10 +114,10 @@ validpgpkeys=(ABAF11C65A2970B130ABE3C479BE3E4300411886  # Linus Torvalds
 # 'SKIP'	#For a labeled checksum, manually run: sha256sum *
 
 sha256sums=(
-	    '30a1bb8334bf716ac94e9feeb94a7e375688f1763e71b6afbda793639f1a4ef2'	# arch-config
-	    '2a86b507e80e8e48795812ad6f456a966fe496cd5ed5e24ac791b46ad3c46bd4'	# arch.patch
+	    '85c4e091c0c8a0f189c1c61603b774442b8b375f7232e2f779296bc4418c428f'	# arch-config
+	    '609194e93d0b6c0801326199b25083543fb7da827dac48a2ae1f3b78fb327f56'	# arch.patch
             'SKIP'								# config
-            '3536805f90723de0b0cddd262a89ac648360900acdeacdb129e4a9b4608bfc0f'	# linux-stable-rc-linux-6.13.y.tar.gz
+            '28af36aef5775c46fe8eb754a1f0f6650b10780c120940a44544e0628eb8b2ec'	# linux-stable-rc-linux-6.15.y.tar.gz
 	   )
 #-------------------------------------------------------------------------------------------------------------------------------------
 export KBUILD_BUILD_HOST=archlinux
@@ -148,10 +143,9 @@ if	[[ ! -e src/in_process ]]; then				# Prevent running enclosed code during bui
 		cp 'arch-config' 'config'
 	fi
 
-	_basedir=$(tar -ztvf linux-stable-rc-linux-6.13.y.tar.gz | awk 'NR==1 {print $6 }')
-	_verst=$(_vdata='linux-stable-rc-linux-6.13.y.tar.gz'
-#		tar -xzOf "${_vdata}" "${_vdata%.tar*}/"Makefile | awk -F'= *' '
-		tar -xzOf "${_vdata}" "${_basedir}"Makefile      | awk -F'= *' '
+	_basedir=$(tar -ztvf linux-stable-rc-linux-"${_version%.*}".y.tar.gz | awk '/[0-9].y\/Makefile/ {print $6}')
+	_verst=$(_vdata='linux-stable-rc-linux-6.15.y.tar.gz'
+		tar -xzOf "${_vdata}" "${_basedir}" | awk -F'= *' '
 			/^VERS/ {v1 = $2}
 			/^PATC/ {v2 = $2}
 			/^SUBL/ {v3 = $2}
@@ -177,7 +171,7 @@ EOF
 	_nver=$(awk -F'=' '/^pkgver=/{print $2}' "${_pb}")
 	_nrel=$(awk -F'=' '/^pkgrel=/{print $2}' "${_pb}")
 	if	[[ "${_nver}" != "${pkgver}" ]]; then
-		sed -i s/^pkgver=6\.13.*/pkgver="${pkgver}"/ "${_pb}"
+		sed -i s/^pkgver=6\.15.*/pkgver="${pkgver}"/ "${_pb}"
 	fi
 	if	[[ "${_nrel}" != "${pkgrel}" ]]; then
 		sed -i s/^pkgrel=[0-9].*/pkgrel="${pkgrel}"/ "${_pb}"
