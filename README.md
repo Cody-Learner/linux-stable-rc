@@ -11,8 +11,10 @@ The source download takes a few min, after which the current kernel version will
 
 You'll be promped with notification of the current version, along with making a selection to: proceed, remove rust, or exit.
 
-The entire build process takes slightly less than 30min on this hardware, a 7yo HP mini desktop with a Ryzen 2400GE 4 core 35 watt processor.
-Build time is highly dependant on the amount of modules being built. Without using AUR `modprobd-db` this time increases to around 4hr.
+The entire build process takes slightly less than 30min on a 7yo HP mini desktop with a Ryzen 2400GE 4 core processor,
+or about 6.5 min on a newer Ryzen 8745HS 8 core processor.
+
+Build time is highly dependant on the number of modules being built. Build time will increases dramatically without AUR `modprobd-db`.
 
 To build this kernel:
 
@@ -54,9 +56,9 @@ To use your config, just replace the existing `config` with your custom config b
 
 **Note:** You may have to update checksums as kernel and config file being pulled are dynamic.<br>
 There are several options for updating checksums including: <br>
-* For checksums             : makepkg -g  for checksums
-* For checksums + file names: sha256sum *  <br>
-Copy / paste updates into PKGBUILD.  <br>
+* For a list of checksums, run                 : `makepkg -g`  <br>
+* For a list of checksums with file names, run : `sha256sum *`  <br>
+Copy / paste updated checksums into PKGBUILD.  <br>
 
 
 Arch wiki quote\: https://wiki.archlinux.org/title/VCS_package_guidelines#Authentication_and_security<br>
